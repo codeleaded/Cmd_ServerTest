@@ -6,27 +6,29 @@ INCLUDES = -Isrc
 LDFLAGS = -lm
 SRC_DIR = src
 BUILD_DIR = build
-TARGET = $(BUILD_DIR)/Main
 
-SRCS = $(wildcard $(SRC_DIR)/*.c)
-OBJS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS))
+SERVER = $(BUILD_DIR)/Server
+CLIENT = $(BUILD_DIR)/Client
 
-all: $(BUILD_DIR) $(TARGET)
+all: $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(INCLUDES) $(SRC_DIR)/Server.c -o $(SERVER) $(LDFLAGS) 
+	$(CC) $(CFLAGS) $(INCLUDES) $(SRC_DIR)/Client.c -o $(CLIENT) $(LDFLAGS) 
 
 alldebug:
-	$(CC) -g $(CFLAGS) $(INCLUDES) ./$(SRC_DIR)/Main.c -o ./$(TARGET) $(LDFLAGS) 
+	$(CC) -g $(CFLAGS) $(INCLUDES) $(SRC_DIR)/Server.c -o $(SERVER) $(LDFLAGS) 
+	$(CC) -g $(CFLAGS) $(INCLUDES) $(SRC_DIR)/Client.c -o $(CLIENT) $(LDFLAGS) 
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-$(TARGET): $(SRCS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(SRCS) -o $(TARGET) $(LDFLAGS)
-
 debug:
-	gdb ./$(TARGET)
+	gdb ./$(SERVER)
 
 exe:
-	./$(TARGET)
+	./$(SERVER)
+
+client:
+	./$(CLIENT)
 
 clean:
 	rm -rf $(BUILD_DIR)/*
