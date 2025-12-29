@@ -1,3 +1,4 @@
+#include "/home/codeleaded/System/Static/Library/CStr.h"
 #include "/home/codeleaded/System/Static/Library/Networking.h"
 
 
@@ -5,12 +6,14 @@
 
 void Client_Proc_Connect(Vector* signalhandlers,Client* c,void* data,int size){
     printf("Client_Connect: %d\n",c->sockfd);
+    Client_Signal_Send(c,SIGNAL_CONNECT,NULL,0);
 }
 void Client_Proc_Disconnect(Vector* signalhandlers,Client* c,void* data,int size){
     printf("Client_Disconnect: %d\n",c->sockfd);
+    Client_Signal_Send(c,SIGNAL_DISCONNECT,NULL,0);
 }
 void Client_Proc_Msg(Vector* signalhandlers,Client* c,void* data,int size){
-    printf("Client_Msg: %d\n",c->sockfd);
+    printf("Client_Msg: %d -> '%s' (%d)\n",c->sockfd,(char*)data,size);
 }
 
 int main(){
@@ -22,9 +25,11 @@ int main(){
     });
 
     while(1){
-        //char buffer[1024];
-        //int size = scanf("%1023s",buffer);
-        //Client_Signal_Send(&s,SIGNAL_MSG,buffer,size);
+        char buffer[1024];
+        int size = scanf("%1023s",buffer);
+        if(CStr_Cmp(buffer,"exit")) break;
+        
+        Client_Signal_Send(&s,SIGNAL_MSG,buffer,CStr_Size(buffer) + 1);
 
         Client_Update(&s);
         Client_DoAll(&s);
